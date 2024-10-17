@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+{% block head %}
+<meta http-equiv="refresh" content="120">
+{% endblock %}
+{% block content %}
+<h1 id='title'> Températures des 2 dernières heures </h1>
+<h2>Dernier relevé : {{ date[-1] }}</h2>
+<select name="temp" id="temp" onchange="change_temp()">
+  <option value="1">Températures des 2 dernières heures</option>
+  <option value="2">Historique des températures</option>
+  <option value="3">Température actuelle</option>
+</select>
+<div id="div_graph" style="position: relative; width:80vw">
+  <canvas id="graph"></canvas>
+</div>
+<h2 id="current_temp" style="display: none; font-size: 48px; text-align: center; margin-top: 20px;">{{ temp[-1] }}°C</h2>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+  // Function to save the selected option in localStorage
+  function saveSelectedOption(value) {
+    localStorage.setItem('selectedTempOption', value);
+  }
+
+  // Function to get the selected option from localStorage
+  function getSelectedOption() {
+    return localStorage.getItem('selectedTempOption');
+  }
+
+  // Function to set the selected option in the dropdown
+  function setSelectedOption(value) {
+    document.getElementById("temp").value = value;
+  }
+
+  var ctx = document.getElementById('graph').getContext('2d');
+  const data = {{ temp[-9:]|tojson }};
+  const date = {{ date[-9:]|tojson }};
+  const heure = {{ heure[-9:]|tojson }};
+  var graph = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: heure,
+          datasets: [{
+            label: 'Températures',  
+            data: data, 
+            borderColor: ['#007bff'],
+            fill: false,
+            lineTension: 0.5,
+            borderWidth: 3,
+          }]
+      },
+      options: {
+        responsive: true,
+        title: {
+          display: true,
+          text: 'Températures',
+          fontSize: 50,
+          fontColor: '#333',
+          fontFamily: 'arial',
+        },
+        legend: {
+          display: false,
+        },
+        tooltips: {
+          backgroundColor: 'transparent',
+          titleFontSize: 16,
+          bodyAlign: 'right',
+          bodyFontSize: 16,
+          bodyFontColor: '#333',
+          bodyFontFamily: 'arial',
+          displayColors: false,
+          callbacks: {
+            title: function() {
+              return '';
+            },
+            label: function(tooltipItem) {
+              return 'Température : ' + tooltipItem.yLabel + '°C';
+            }
+          }
+        }
+      }
+  });
+
+function actuelle_temp(){
+  document.getElementById('current_temp').style.display = 'block'; // Affiche la température actuelle en grand
+  document.getElementById('graph').style.display = 'none'; // Cache le graphique
+}
+
+function change_temp(){
+  var selectedValue = document.getElementById("temp").value;
+  saveSelectedOption(selectedValue); // Save the selected option in localStorage
+
+  if (selectedValue === "1") {
+    // Code for displaying temperatures of the last 2 hours
+    const data = {{ temp[-9:]|tojson }};
+    const date = {{ date[-9:]|tojson }};
+    const heure = {{ heure[-9:]|tojson }};
+    graph.data.datasets[0].data = data;
+    graph.data.labels = heure;
+    graph.options.tooltips.callbacks.label = function(tooltipItem) {
+      return 'Température : ' + tooltipItem.yLabel + '°C';
+    };
+    graph.update(); 
+    document.getElementById('current_temp').style.display = 'none';
+    document.getElementById('graph').style.display = 'block';
+  } else if (selectedValue === "2") {
+    // Code for displaying temperature history
+    const data = {{ temp|tojson }};
+    const date = {{ date|tojson }};
+    const heure = {{ heure|tojson }};
+    graph.data.datasets[0].data = data;
+    graph.data.labels = date;
+    graph.options.tooltips.callbacks.label = function(tooltipItem) {
+      return 'Température : ' + tooltipItem.yLabel + '°C à ' + heure[tooltipItem.index];
+    };
+    graph.update(); 
+    document.getElementById('current_temp').style.display = 'none';
+    document.getElementById('graph').style.display = 'block';
+  } else if (selectedValue === "3") {
+    actuelle_temp();
+  }
+}
+
+// On page load, restore the selected option and update the graph accordingly
+window.onload = function() {
+  var selectedOption = getSelectedOption();
+  if (selectedOption) {
+    setSelectedOption(selectedOption);
+    change_temp();
+  }
+};
+
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ {% if title %}
+ <title>STEF Logistique - {{ title }}</title>
+ {% else %}
+ <title>STEF Logistique</title>
+ {% endif %}
+ <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/css.css') }}"/>
+ {% block head %}{% endblock %}
+ </head>
+ <body>
+ <header>
+ {% include "nav.html" %}
+ {% block header %}{% endblock %}
+ </header>
+ <section id="info" class="zone_info">
+ {% block content %}{% endblock %}
+ </section>
+ <footer>
+    <h3> SAE 204 - Projet Intégartif </h3>
+    <p> Jocelin LAURET </p> 
+    <p> Julien JEANSON </p> 
+    {% block footer %}{% endblock %}
+</footer>
+ </body>
+</html>

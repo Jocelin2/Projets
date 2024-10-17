@@ -1,0 +1,97 @@
+/*le body prendra toute la hauteur de la page pour que le footer soit toujours en bas de la page*/
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    /*background: linear-gradient(to right, #74ebd5, #ACB6E5); /* Dégradé de fond */
+    /*background: linear-gradient(35deg, red, purple);*/
+    background-color: whitesmoke;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    display: grid;
+}
+
+#title {
+    font-size: 36px;
+    margin-top: 20px;
+}
+
+select, button {
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#current_temp {
+    display: none;
+    font-size: 48px;
+    text-align: center;
+    margin-top: 20px;
+    color: #61a3ff; /* Couleur de la température actuelle */
+}
+
+#div_graph {
+    margin: 10% auto;  
+}
+
+button {
+    background-color: #00ADB8;
+    color: white;
+}
+
+option {
+    color: #333;
+}
+
+:root {
+    --arrow-bg: rgba(255, 255, 255, 0.3);
+    --arrow-icon: url(https://upload.wikimedia.org/wikipedia/commons/9/9d/Caret_down_font_awesome_whitevariation.svg);
+    --option-bg: rgb(255, 255, 255);
+    --select-bg: rgba(255, 255, 255, 0.2);
+}
+
+select {
+    /* Reset */
+    appearance: none;
+    border: 0;
+    outline: 0;
+    font: inherit;
+    /* Personalize */
+    width: 22rem;
+    padding: 1rem 4rem 1rem 1rem;
+    background: var(--arrow-icon) no-repeat right 0.8em center / 1.4em,
+      linear-gradient(to left, rgba(124, 124, 124, 0.372) 3em, var(--select-bg) 3em);
+    color: rgb(0, 0, 0);
+    border-radius: 0.25em;
+    box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    /* Remove IE arrow */
+    &::-ms-expand {
+      display: none;
+    }
+    /* Remove focus outline */
+    &:focus {
+      outline: none;
+    }
+    /* <option> colors */
+    option {
+      color: inherit;
+      background-color: var(--option-bg);
+    }
+  }
+  
+/*footer tout le temps en bas de la page*/
+footer {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+}
