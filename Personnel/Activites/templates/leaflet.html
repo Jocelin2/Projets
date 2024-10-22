@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mapping my runs</title>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css" />
+    <style>
+      #map {
+        width: 80%;
+        height: 400px;
+        position: relative;
+        margin: 0 auto;
+
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My runs</h1>
+    <select id="run-selector" onchange="updateMap()">
+      {% for date in dates %}
+        <option value="{{ loop.index0 }}">{{ date }}</option>
+      {% endfor %}
+    </select>
+
+    <div id="map"></div>
+
+    <p>{{ activities }}</p>
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"></script>
+    <script>
+      var map = L.map('map').setView([57.430851, 25.912180], 13);
+      L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+      }).addTo(map);
+      var runs = [
+        {% for run in runs %}
+          {{ run | tojson | safe }},
+        {% endfor %}
+      ];
+      var polylines = [];
+
+      var index = document.getElementById("run-selector").value;
+
+      var encodedRoutes = runs[index];
+
+      var coordinates = L.Polyline.fromEncoded(encodedRoutes).getLatLngs();
+
+      var polyline = L.polyline(coordinates, {
+        color: 'blue',
+        weight: 2,
+        opacity: 0.7,
+        lineJoin: 'round'
+      }).addTo(map);
+
+      polylines.push(polyline);
+
+      map.fitBounds(polyline.getBounds());
+
+      function updateMap() {
+        // Clear existing polylines
+        for (let polyline of polylines) {
+          map.removeLayer(polyline);
+        }
+        polylines = [];
+
+        var index = document.getElementById("run-selector").value;
+        var encodedRoutes = runs[index];
+
+        var coordinates = L.Polyline.fromEncoded(encodedRoutes).getLatLngs();
+        var polyline = L.polyline(coordinates, {
+          color: 'blue',
+          weight: 2,
+          opacity: 0.7,
+          lineJoin: 'round'
+        }).addTo(map);
+
+        polylines.push(polyline);
+        // Adjust the map view to the new polyline
+        map.fitBounds(polyline.getBounds());
+
+      }
+
+      /*function updateMap() {
+        // Clear existing polylines
+        for (let polyline of polylines) {
+          map.removeLayer(polyline);
+        }
+        polylines = [];
+
+        var index = document.getElementById("run-selector").value;
+        var encodedRoutes = runs[index];
+
+        var coordinates = L.Polyline.fromEncoded(encodedRoutes).getLatLngs();
+        var polyline = L.polyline(coordinates, {
+          color: 'blue',
+          weight: 2,
+          opacity: 0.7,
+          lineJoin: 'round'
+        }).addTo(map);
+
+        polylines.push(polyline);
+        // Adjust the map view to the new polyline
+        map.fitBounds(polyline.getBounds());
+
+      }
+
+      // Initial map load
+      updateMap();*/
+    </script>
+  </body>
+</html>
